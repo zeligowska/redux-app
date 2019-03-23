@@ -1,39 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
 
+import counterReducer, {inc, dec} from './store/counter'
+import todoReducer from './store/todo'
 
 import './index.css';
 import App from './App';
 
-const INCREMENT_COUNTER = 'INCREMENT_COUNTER';
-const DECREMENT_COUNTER = 'DECREMENT_COUNTER';
 
-const counterReducer = (state = 0, action) => {
-    switch (action.type) {
-        case 'INCREMENT_COUNTER':
-            return state + 1;
-        case 'DECREMENT_COUNTER':
-            return state - 1;
-        default:
-            return state;
-    }
+const store = createStore(
+    combineReducers({
+        counter: counterReducer,
+        todo: todoReducer
+    }),
+    window.__REDUX_DEVTOOLS_EXTENSION__ &&
+    window.__REDUX_DEVTOOLS_EXTENSION__()
+)
+
+window.addTodo = (title) => {
+    store.dispatch({
+        type: 'ADD_TODO',
+        text: title
+    })
 }
 
 
-let store = createStore(counterReducer)
-console.log('initial state: ', store.getState());
-store.dispatch({
-    type: 'INCREMENT_COUNTER'
-})
-console.log('state after increment: ', store.getState())
-store.dispatch({
-    type: 'DECREMENT_COUNTER'
-})
-console.log('state after decrement: ', store.getState())
-store.dispatch({
-    type: 'DECREMENT_COUNTER'
-})
-console.log('state after second decrement: ', store.getState())
+window.inc = () => store.dispatch(inc())
+window.dec = () => store.dispatch(dec())
 
 ReactDOM.render(<App />, document.getElementById('root'));
